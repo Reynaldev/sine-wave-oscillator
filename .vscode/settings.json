@@ -1,0 +1,12 @@
+{
+    "files.associations": {
+        "*.embeddedhtml": "html",
+        "limits.h": "c",
+        "math.h": "c",
+        "stdint.h": "c",
+        "argp.h": "c",
+        "stdio.h": "c",
+        "features.h": "c",
+        "complex.h": "c"
+    }
+}
