@@ -34,21 +34,31 @@ float sinosc_process(struct SineOscillator *so) {
     return sample;
 }
 
+int count_char_ptr(char *p) {
+    uint32_t i = 0;
+
+    while (p[i] != '\0') { i++; }
+
+    return i;
+}
+
 /*
  * To handle writing integer to file 
  * by converting a 4 bytes long into a desired array of size byte(s) long
  */
-float write_bytes(uint32_t bytes, int size, FILE *file) {
-    char *buffer = malloc(size + 1);
-
+void write_int_bytes(int bytes, int size, FILE *file) {
     for (int i = 0; i < size; i++) {
-        *(buffer + i) = (bytes >> (8 * i)) & 0xFF;
+        char byte = (bytes >> (8 * i)) & 0xFF;
+        fwrite(&byte, 1, 1, file);
     }
-    
-    fwrite(buffer, 1, sizeof(buffer), file);
-
-    free(buffer);
 }
+
+// void write_float_bytes(float bytes, int size, FILE *file) {
+//     for (int i = 0; i < size; i++) {
+//         char byte = (bytes >> (8 * i)) & 0xFF;
+//         fwrite(&byte, 1, 1, file);
+//     }
+// }
 
 int main(int argc, char **argv) {
     uint32_t duration = 2;
@@ -80,13 +90,13 @@ int main(int argc, char **argv) {
 
     // Write format chunk
     fwrite("fmt ", 1, 4, file);
-    write_bytes(16, 1, file);
+    write_int_bytes(16, 2, file);
 
     for (int i = 0; i < SAMPLE_RATE * duration; i++) {
         float sample = sinosc_process(so);
         int int_sample = (int)(sample * max_amp);
 
-        write_bytes(int_sample, 2, file);
+        write_int_bytes(int_sample, 2, file);
     }
     
     fclose(file);
