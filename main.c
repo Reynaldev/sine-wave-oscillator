@@ -51,17 +51,15 @@ int count_char_ptr(char *p) {
  *
  *  size : Size for each byte
  *  
- *  count: Bytes length
- *  
  *  file : FILE struct
  */
-void write_int_bytes(int bytes, int size, int count, FILE *file) {
-    char *byte = malloc(count);
+void write_int_bytes(int bytes, int size, FILE *file) {
+    char *byte = malloc(size);
     for (int i = 0; i < size; i++) {
         byte[i] = (bytes >> (8 * i)) & 0xFF;
     }
 
-    fwrite(byte, sizeof(*byte), count, file);
+    fwrite(byte, sizeof(*byte), size, file);
 }
 
 // void write_float_bytes(float bytes, int size, FILE *file) {
@@ -105,13 +103,13 @@ int main(int argc, char **argv) {
 
     // Write format chunk
     fwrite("fmt ", 1, 4, file);
-    write_int_bytes(16, 2, 4, file);
-    write_int_bytes(1, 2, 2, file);
-    write_int_bytes(1, 2, 2, file);
-    write_int_bytes(SAMPLE_RATE, 4, 4, file);
-    write_int_bytes(SAMPLE_RATE * BIT_DEPTH / 8, 4, 4, file);
-    write_int_bytes(BIT_DEPTH / 8, 2, 2, file);
-    write_int_bytes(BIT_DEPTH, 2, 2, file);
+    write_int_bytes(16, 4, file);
+    write_int_bytes(1, 2, file);
+    write_int_bytes(1, 2, file);
+    write_int_bytes(SAMPLE_RATE, 4, file);
+    write_int_bytes(SAMPLE_RATE * BIT_DEPTH / 8, 4, file);
+    write_int_bytes(BIT_DEPTH / 8, 2, file);
+    write_int_bytes(BIT_DEPTH, 2, file);
 
     // Data chunk
     fwrite("data", 1, 4, file);
@@ -123,14 +121,14 @@ int main(int argc, char **argv) {
         float sample = sinosc_process(so);
         int int_sample = (int)(sample * max_amp);
 
-        write_int_bytes(int_sample, 2, 2, file);
+        write_int_bytes(int_sample, 2, file);
     }
 
     long post_position = ftell(file);
     int byte_pos = fseek(file, pre_positon - 4, SEEK_SET);
 
-    write_int_bytes(post_position - pre_positon, 4, 4, file);
-    write_int_bytes(post_position - 8, 4, 4, file);
+    write_int_bytes(post_position - pre_positon, 4, file);
+    write_int_bytes(post_position - 8, 4, file);
 
     fseek(file, 4, SEEK_SET);
     
