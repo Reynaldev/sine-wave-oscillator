@@ -10,4 +10,5 @@ make
 
 # Usage
 `./swo [duration]`
+
 And there will be a WAV audio file
