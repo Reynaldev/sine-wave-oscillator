@@ -60,14 +60,10 @@ void write_int_bytes(int bytes, int size, FILE *file) {
     }
 
     fwrite(byte, sizeof(*byte), size, file);
-}
 
-// void write_float_bytes(float bytes, int size, FILE *file) {
-//     for (int i = 0; i < size; i++) {
-//         char byte = (bytes >> (8 * i)) & 0xFF;
-//         fwrite(&byte, 1, 1, file);
-//     }
-// }
+    free(byte);
+    byte = NULL;
+}
 
 int main(int argc, char **argv) {
     uint32_t duration = 2;
@@ -134,6 +130,7 @@ int main(int argc, char **argv) {
     
     fclose(file);
     free(so);
+    so = NULL;
     
     return 0;
 }
